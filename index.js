@@ -14,7 +14,8 @@ const Pictures = require('./models/pictures.js');
 
 // IMPORTANT: Replace the string below with your actual MongoDB Atlas connection string
 // Ensure there are no extra quotes and your password is correct.
-const uri = "mongodb+srv://yourUsername:yourPassword@cluster0.abcde.mongodb.net/visas?retryWrites=true&w=majority";
+const uri = "mongodb+srv://fixgraphicsonline_db_user:tnxT6ttJGejYT31n@cluster0.abcde.mongodb.net/visas?retryWrites=true&w=majority";
+
 
 /* --- 2. STORAGE CONFIG --- */
 // On Vercel, the filesystem is read-only. 
