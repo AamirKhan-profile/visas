@@ -1,0 +1,15 @@
+<h2>Add Applicant Pictures</h2>
+
+<form action="/pictures" method="POST" enctype="multipart/form-data">
+
+    <label>Applicant Name</label>
+    <input type="text" name="applicantName" required class="form-control mb-3">
+
+    <label>Select Pictures</label>
+    <input type="file" name="pictures" multiple required class="form-control mb-3">
+
+    <button type="submit" class="btn btn-primary">
+        Upload
+    </button>
+
+</form>

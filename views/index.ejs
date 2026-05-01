@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || 'Visa Success Stories' %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS — GREEN · RED · WHITE
+    ═══════════════════════════════════════ */
+    :root {
+      --green:        #1A6B3A;
+      --green-mid:    #228B4A;
+      --green-light:  #2EAD5E;
+      --green-pale:   #E8F5EE;
+      --red:          #C0392B;
+      --red-mid:      #E74C3C;
+      --red-pale:     #FDF0EF;
+      --white:        #FFFFFF;
+      --off-white:    #F7FAF8;
+      --text-dark:    #0F2318;
+      --text-muted:   #5A7A66;
+      --border:       #D4E8DC;
+      --shadow-g:     rgba(26,107,58,.15);
+      --shadow-r:     rgba(192,57,43,.12);
+      --wa-green:     #25D366;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--white);
+      color: var(--text-dark);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS ── */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: .55;
+    }
+
+    /* ════════════ HERO ════════════ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 24px 80px;
+      z-index: 1;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 20%, rgba(26,107,58,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 80% 80%, rgba(192,57,43,.08) 0%, transparent 60%),
+        var(--white);
+    }
+
+    /* diagonal accent stripe */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--green) 0%, var(--green-light) 40%, var(--red-mid) 70%, var(--red) 100%);
+    }
+
+    .pill-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green-pale);
+      border: 1.5px solid var(--green-light);
+      color: var(--green);
+      font-size: .72rem; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase;
+      padding: 7px 20px; border-radius: 100px;
+      margin-bottom: 36px;
+      animation: fadeDown .7s ease both;
+    }
+    .pill-badge .blink {
+      width: 7px; height: 7px;
+      background: var(--green-light); border-radius: 50%;
+      animation: blink 1.6s infinite;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 7.5vw, 5.8rem);
+      font-weight: 900; line-height: 1.04;
+      color: var(--text-dark);
+      margin-bottom: 22px;
+      animation: fadeUp .85s .1s ease both;
+    }
+    .hero-title .green { color: var(--green); }
+    .hero-title .red   { color: var(--red); font-style: italic; }
+
+    .hero-sub {
+      max-width: 530px; color: var(--text-muted);
+      font-size: 1.05rem; line-height: 1.75;
+      margin-bottom: 52px;
+      animation: fadeUp .85s .22s ease both;
+    }
+
+    /* ── stat counters ── */
+    .stats-row {
+      display: flex; gap: 0; flex-wrap: wrap;
+      justify-content: center;
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      animation: fadeUp .85s .35s ease both;
+      background: var(--white);
+      box-shadow: 0 8px 40px var(--shadow-g);
+    }
+    .stat-cell {
+      padding: 28px 44px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      flex: 1; min-width: 130px;
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem; font-weight: 700;
+      color: var(--green); display: block; line-height: 1;
+    }
+    .stat-num.red { color: var(--red); }
+    .stat-label {
+      font-size: .72rem; color: var(--text-muted);
+      letter-spacing: .14em; text-transform: uppercase; margin-top: 5px;
+    }
+
+    /* ════════════ MARQUEE ════════════ */
+    .marquee-wrap {
+      position: relative; z-index: 1;
+      overflow: hidden;
+      background: var(--green);
+      padding: 14px 0;
+      margin: 0;
+    }
+    .marquee-track {
+      display: flex; width: max-content;
+      animation: marquee 22s linear infinite;
+    }
+    .marquee-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 0 36px;
+      color: #fff; font-size: .88rem; font-weight: 500;
+      white-space: nowrap;
+    }
+    .marquee-dot { width: 5px; height: 5px; background: rgba(255,255,255,.4); border-radius: 50%; }
+
+    /* ════════════ SECTION LABEL ════════════ */
+    .section-head {
+      text-align: center; margin-bottom: 60px;
+      position: relative; z-index: 1;
+    }
+    .section-head small {
+      display: block; font-size: .72rem; font-weight: 600;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 10px;
+    }
+    .section-head h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.9rem, 4.5vw, 3rem); font-weight: 700;
+      color: var(--text-dark);
+    }
+    .section-head h2 span { color: var(--green); }
+
+    /* ════════════ STORY CARDS ════════════ */
+    .stories-section {
+      padding: 90px 24px;
+      background: var(--off-white);
+      position: relative; z-index: 1;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 28px; max-width: 1080px; margin: 0 auto;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 4px 24px var(--shadow-g);
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1), box-shadow .4s, border-color .4s;
+      opacity: 0; transform: translateY(50px);
+    }
+    .card.visible {
+      animation: cardIn .7s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 56px var(--shadow-g);
+      border-color: var(--green-light);
+    }
+
+    /* photo */
+    .card-photo {
+      position: relative; height: 230px; overflow: hidden;
+    }
+    .card-photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .6s ease;
+      filter: brightness(.92);
+    }
+    .card:hover .card-photo img { transform: scale(1.08); }
+
+    /* country badge */
+    .country-badge {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--red); color: #fff;
+      font-size: .68rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 100px;
+    }
+
+    /* approved stamp */
+    .stamp-circle {
+      position: absolute; bottom: -24px; left: 22px;
+      width: 54px; height: 54px;
+      background: var(--green);
+      border: 3px solid var(--white);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 16px var(--shadow-g);
+    }
+
+    /* card body */
+    .card-body { padding: 42px 24px 28px; }
+
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--text-dark); margin-bottom: 4px;
+    }
+    .card-visa-tag {
+      font-size: .75rem; font-weight: 600;
+      color: var(--green); letter-spacing: .1em;
+      text-transform: uppercase; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-visa-tag::before {
+      content: ''; display: block;
+      width: 22px; height: 2px; background: var(--green);
+    }
+
+    .card-quote {
+      font-size: .93rem; color: var(--text-muted);
+      line-height: 1.75; font-style: italic;
+      margin-bottom: 20px;
+      border-left: 3px solid var(--red);
+      padding-left: 14px;
+    }
+
+    .card-location {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .8rem; color: var(--text-muted);
+    }
+    .card-location svg { color: var(--red); flex-shrink: 0; }
+
+    /* ════════════ TRUST GRID ════════════ */
+    .trust-section {
+      padding: 90px 24px;
+      background: var(--white);
+      position: relative; z-index: 1;
+    }
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 22px; max-width: 960px; margin: 0 auto;
+    }
+    .trust-card {
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 32px 24px;
+      text-align: center;
+      background: var(--off-white);
+      transition: border-color .3s, box-shadow .3s, transform .3s;
+    }
+    .trust-card:hover {
+      border-color: var(--green-light);
+      box-shadow: 0 8px 30px var(--shadow-g);
+      transform: translateY(-4px);
+    }
+    .trust-icon {
+      font-size: 2.2rem; margin-bottom: 14px;
+      display: block;
+    }
+    .trust-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+    .trust-card p { font-size: .84rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ════════════ CTA STRIP ════════════ */
+    .cta-strip {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 60%, var(--red) 100%);
+      padding: 72px 24px;
+      text-align: center;
+      position: relative; z-index: 1;
+      overflow: hidden;
+    }
+    .cta-strip::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='rgba(255,255,255,.07)'/%3E%3C/svg%3E") repeat;
+    }
+    .cta-strip h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: #fff; margin-bottom: 14px;
+      position: relative;
+    }
+    .cta-strip p { color: rgba(255,255,255,.8); margin-bottom: 32px; font-size: 1rem; position: relative; }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #fff; color: var(--green);
+      font-weight: 700; font-size: .95rem;
+      padding: 14px 34px; border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 6px 30px rgba(0,0,0,.2);
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+    }
+    .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+    .cta-btn svg { width: 22px; height: 22px; fill: var(--wa-green); }
+
+    /* ════════════ WHATSAPP FLOAT ════════════ */
+    .wa-float {
+      position: fixed; bottom: 28px; right: 28px;
+      z-index: 999;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .wa-tip {
+      background: var(--text-dark); color: #fff;
+      font-size: .8rem; padding: 8px 16px;
+      border-radius: 100px; white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+      animation: tipPulse 3s 2s ease infinite;
+    }
+    .wa-btn {
+      position: relative;
+      width: 62px; height: 62px;
+      background: var(--wa-green);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 6px 28px rgba(37,211,102,.45);
+      animation: waBounce 2.4s ease-in-out infinite;
+      transition: transform .2s;
+    }
+    .wa-btn:hover { transform: scale(1.1); }
+    .wa-ring {
+      position: absolute; inset: -7px;
+      border: 2px solid var(--wa-green);
+      border-radius: 50%; opacity: 0;
+      animation: ring 2.2s 1s infinite;
+    }
+    .wa-btn svg { width: 32px; height: 32px; fill: #fff; }
+
+    /* ════════════ KEYFRAMES ════════════ */
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:none} }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:none} }
+    @keyframes blink    { 0%,100%{opacity:1} 50%{opacity:.25} }
+    @keyframes marquee  { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    @keyframes cardIn   { from{opacity:0;transform:translateY(50px)} to{opacity:1;transform:none} }
+    @keyframes waBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+    @keyframes ring     { 0%{transform:scale(1);opacity:.65} 100%{transform:scale(1.55);opacity:0} }
+    @keyframes tipPulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+    @media(max-width:540px){
+      .stats-row{flex-direction:column;}
+      .stat-cell{border-right:none;border-bottom:1px solid var(--border);}
+      .stat-cell:last-child{border-bottom:none;}
+      .wa-tip{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="pill-badge">
+    <span class="blink"></span>
+    Visa Consultants &mdash; Pakistan
+  </div>
+
+  <h1 class="hero-title">
+    Real People.<br>
+    <span class="green">Real Visas.</span>
+    <span class="red"> Approved.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Hundreds of Pakistani families have trusted us to make their international dreams a reality.
+    Browse our genuine client success stories below.
+  </p>
+
+  <div class="stats-row">
+    <div class="stat-cell">
+      <span class="stat-num" data-count="500">0</span>
+      <span class="stat-label">Visas Approved</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-num red" data-count="98">0</span>
+      <span class="stat-label">% Success Rate</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-num" data-count="12">0</span>
+      <span class="stat-label">Countries Covered</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-num red" data-count="7">0</span>
+      <span class="stat-label">Years Experience</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MARQUEE ══════════ -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <% const flags = [
+      '✅ UK Visit Visa Approved',
+      '✅ Canada Student Visa Approved',
+      '✅ Schengen Tourist Visa Approved',
+      '✅ Australia Work Visa Approved',
+      '✅ UAE Residence Visa Approved',
+      '✅ USA B1/B2 Visa Approved',
+      '✅ Turkey e-Visa Approved',
+      '✅ Malaysia Visa Approved'
+    ]; %>
+    <% flags.concat(flags).forEach(function(f){ %>
+      <div class="marquee-item">
+        <%= f %> <span class="marquee-dot"></span>
+      </div>
+    <% }); %>
+  </div>
+</div>
+
+<!-- ══════════ SUCCESS STORIES ══════════ -->
+<section class="stories-section">
+  <div class="section-head">
+    <small>✦ Genuine Client Results</small>
+    <h2>Our <span>Success</span> Stories</h2>
+  </div>
+
+  <div class="cards-grid">
+
+    <%
+    const clients = [
+      {
+        name:     'Hassan Raza',
+        visa:     'UK Visit Visa · Approved 2024',
+        country:  '🇬🇧 UK Visa',
+        emoji:    '✈️',
+        location: 'Lahore, Punjab, Pakistan',
+        quote:    'I was nervous about my UK application but the team guided me through every step. My visa was approved in just 15 working days — truly grateful!',
+        img:      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+        delay:    0
+      },
+      {
+        name:     'Abdullah',
+        visa:     'Canada Student Visa · Approved 2024',
+        country:  '🇨🇦 Canada Visa',
+        emoji:    '🎓',
+        location: 'Rawalpindi, Punjab, Pakistan',
+        quote:    'I dreamed of studying in Canada and they made it happen. The documentation process was smooth and professional. Now I am enrolled in my dream university!',
+        img:      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80',
+        delay:    1
+      },
+      {
+        name:     'Raiyaz',
+        visa:     'Schengen Tourist Visa · Approved 2025',
+        country:  '🇩🇪 Schengen Visa',
+        emoji:    '🌍',
+        location: 'Islamabad, Pakistan',
+        quote:    'After two rejections on my own, I approached this team. They restructured my entire application and within weeks I had my Schengen visa in hand. Incredible service!',
+        img:      'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80',
+        delay:    2
+      }
+    ];
+    %>
+
+    <% clients.forEach(function(c){ %>
+    <div class="card" data-delay="<%= c.delay %>">
+      <div class="card-photo">
+        <img src="<%= c.img %>" alt="<%= c.name %>" loading="lazy" />
+        <div class="country-badge"><%= c.country %></div>
+        <div class="stamp-circle"><%= c.emoji %></div>
+      </div>
+      <div class="card-body">
+        <div class="card-name"><%= c.name %></div>
+        <div class="card-visa-tag"><%= c.visa %></div>
+        <p class="card-quote">"<%= c.quote %>"</p>
+        <div class="card-location">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <%= c.location %>
+        </div>
+      </div>
+    </div>
+    <% }); %>
+
+  </div>
+</section>
+
+<!-- ══════════ TRUST BADGES ══════════ -->
+<section class="trust-section">
+  <div class="section-head">
+    <small>✦ Why Choose Us</small>
+    <h2>Trusted by <span>Hundreds</span></h2>
+  </div>
+  <div class="trust-grid">
+    <div class="trust-card">
+      <span class="trust-icon">🛡️</span>
+      <h3>100% Genuine</h3>
+      <p>Every document prepared with complete transparency and legal accuracy.</p>
+    </div>
+    <div class="trust-card">
+      <span class="trust-icon">⚡</span>
+      <h3>Fast Processing</h3>
+      <p>We work swiftly so you never miss your travel deadline.</p>
+    </div>
+    <div class="trust-card">
+      <span class="trust-icon">🌐</span>
+      <h3>Expert Guidance</h3>
+      <p>Years of experience across UK, Europe, Canada, Australia &amp; USA.</p>
+    </div>
+    <div class="trust-card">
+      <span class="trust-icon">💬</span>
+      <h3>24/7 WhatsApp</h3>
+      <p>Reachable on WhatsApp any time for updates and queries.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA STRIP ══════════ -->
+<section class="cta-strip">
+  <h2>Ready to Start Your Visa Journey?</h2>
+  <p>Contact us now on WhatsApp — free consultation, quick response.</p>
+  <a class="cta-btn" href="https://wa.me/923414613809" target="_blank" rel="noopener">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 .5C7.44.5.5 7.44.5 16c0 2.72.71 5.37 2.06 7.71L.5 31.5l8.05-2.04A15.44 15.44 0 0016 31.5C24.56 31.5 31.5 24.56 31.5 16S24.56.5 16 .5zm0 28.22a13.7 13.7 0 01-7-1.93l-.5-.3-5.18 1.32 1.36-4.98-.32-.51A13.72 13.72 0 1116 28.72zm7.53-10.27c-.41-.21-2.44-1.2-2.82-1.34-.38-.13-.65-.2-.93.2s-1.07 1.34-1.31 1.62c-.24.27-.48.31-.89.1-.41-.2-1.73-.64-3.3-2.03a12.4 12.4 0 01-2.28-2.83c-.24-.41 0-.63.18-.84.16-.18.41-.48.62-.72.2-.24.27-.41.41-.69.14-.27.07-.52-.03-.72-.1-.21-.93-2.24-1.27-3.07-.34-.8-.68-.69-.93-.7h-.79c-.27 0-.72.1-1.1.52-.38.41-1.44 1.41-1.44 3.43s1.47 3.98 1.68 4.26c.2.27 2.89 4.41 7 6.18.98.42 1.74.67 2.33.86.98.31 1.87.27 2.57.16.79-.12 2.44-.99 2.79-1.95.34-.96.34-1.78.24-1.96-.1-.17-.38-.27-.79-.48z"/>
+    </svg>
+    Chat on WhatsApp — 0341 4613809
+  </a>
+</section>
+
+<!-- ══════════ WHATSAPP FLOAT ══════════ -->
+<div class="wa-float">
+  <div class="wa-tip">💬 Chat with us now!</div>
+  <a class="wa-btn" href="https://wa.me/923414613809" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <div class="wa-ring"></div>
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 .5C7.44.5.5 7.44.5 16c0 2.72.71 5.37 2.06 7.71L.5 31.5l8.05-2.04A15.44 15.44 0 0016 31.5C24.56 31.5 31.5 24.56 31.5 16S24.56.5 16 .5zm0 28.22a13.7 13.7 0 01-7-1.93l-.5-.3-5.18 1.32 1.36-4.98-.32-.51A13.72 13.72 0 1116 28.72zm7.53-10.27c-.41-.21-2.44-1.2-2.82-1.34-.38-.13-.65-.2-.93.2s-1.07 1.34-1.31 1.62c-.24.27-.48.31-.89.1-.41-.2-1.73-.64-3.3-2.03a12.4 12.4 0 01-2.28-2.83c-.24-.41 0-.63.18-.84.16-.18.41-.48.62-.72.2-.24.27-.41.41-.69.14-.27.07-.52-.03-.72-.1-.21-.93-2.24-1.27-3.07-.34-.8-.68-.69-.93-.7h-.79c-.27 0-.72.1-1.1.52-.38.41-1.44 1.41-1.44 3.43s1.47 3.98 1.68 4.26c.2.27 2.89 4.41 7 6.18.98.42 1.74.67 2.33.86.98.31 1.87.27 2.57.16.79-.12 2.44-.99 2.79-1.95.34-.96.34-1.78.24-1.96-.1-.17-.38-.27-.79-.48z"/>
+    </svg>
+  </a>
+</div>
+
+<!-- ══════════ SCRIPTS ══════════ -->
+<script>
+  /* ── Background canvas — soft green/red orbs ── */
+  (function(){
+    const c = document.getElementById('bg-canvas');
+    const ctx = c.getContext('2d');
+    let W, H;
+    const orbs = [];
+
+    function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+
+    const colors = ['rgba(26,107,58,', 'rgba(46,173,94,', 'rgba(192,57,43,', 'rgba(231,76,60,'];
+    for(let i=0;i<18;i++){
+      orbs.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: Math.random()*180+60,
+        vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        a: Math.random()*.09+.03
+      });
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      orbs.forEach(o=>{
+        o.x+=o.vx; o.y+=o.vy;
+        if(o.x<-o.r) o.x=W+o.r; if(o.x>W+o.r) o.x=-o.r;
+        if(o.y<-o.r) o.y=H+o.r; if(o.y>H+o.r) o.y=-o.r;
+        const g = ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+        g.addColorStop(0, o.color+o.a+')');
+        g.addColorStop(1, o.color+'0)');
+        ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
+        ctx.fillStyle=g; ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ── Counter animation ── */
+  function animCount(el){
+    const target = +el.dataset.count;
+    let v = 0;
+    const step = Math.ceil(target/55);
+    const id = setInterval(()=>{
+      v = Math.min(v+step, target);
+      el.textContent = v;
+      if(v>=target) clearInterval(id);
+    }, 28);
+  }
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ animCount(e.target); obs.unobserve(e.target); } });
+  },{threshold:.6});
+  document.querySelectorAll('.stat-num').forEach(n=>obs.observe(n));
+
+  /* ── Card scroll reveal ── */
+  const cardObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const d = (+e.target.dataset.delay||0)*160;
+        setTimeout(()=>e.target.classList.add('visible'), d);
+        cardObs.unobserve(e.target);
+      }
+    });
+  },{threshold:.12});
+  document.querySelectorAll('.card').forEach(c=>cardObs.observe(c));
+</script>
+</body>
+</html>

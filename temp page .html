@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VFS Global Centre</title>
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* HERO HEADER */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url("head.png") center center / cover no-repeat;
+}
+
+/* DARK OVERLAY */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* TOP LEFT TEXT */
+.top-left {
+  position: absolute;
+  top: 25px;
+  left: 30px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+/* CENTER CONTENT */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 120px;
+  color: #ffffff;
+}
+
+/* TEXT STYLES */
+.left-text,
+.center-text {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero-content {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+
+  .left-text,
+  .center-text {
+    font-size: 32px;
+  }
+}
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="overlay"></div>
+
+  <!-- Top Left Logo/Text -->
+  <div class="top-left">
+    <span>VFS GLOBAL CENTRE ✓</span>
+  </div>
+
+  <!-- Center Content -->
+  <div class="hero-content">
+    <h1 class="left-text">SPONER //</h1>
+    <h1 class="center-text">SELETION // LETTER</h1>
+  </div>
+</header>
+
+</body>
+</html>

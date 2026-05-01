@@ -1,0 +1,28 @@
+{
+  "name": "embassy",
+  "version": "1.0.0",
+  "description": "embassyvisacheck.com",
+  "keywords": [
+    "visacheck"
+  ],
+  "license": "ISC",
+  "author": "embassy",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
+     
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "express-ejs-layouts": "^2.5.1",
+    "mongoose": "^9.2.1",
+    "multer": "^2.0.2"
+  }
+}

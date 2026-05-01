@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Application — VisaPanel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --green:       #16A34A;
+      --green-d:     #14532D;
+      --green-l:     #F0FDF4;
+      --green-mid:   #22C55E;
+      --green-ring:  rgba(22,163,74,.14);
+      --red:         #DC2626;
+      --red-l:       #FFF1F1;
+      --amber:       #D97706;
+      --border:      #E4EDE8;
+      --border-med:  #C8DDD0;
+      --text:        #0F2218;
+      --text-2:      #4B6B57;
+      --text-3:      #8AAA94;
+      --bg:          #F5FAF7;
+      --card:        #FFFFFF;
+      --input-bg:    #F8FBF9;
+      --shadow-sm:   0 1px 4px rgba(15,34,24,.06);
+      --shadow-md:   0 4px 20px rgba(15,34,24,.08);
+      --radius:      10px;
+      --radius-lg:   14px;
+      --radius-xl:   18px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 15px; -webkit-text-size-adjust: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ══ TOPBAR ══ */
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 clamp(16px, 4vw, 40px);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--green);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--text);
+      line-height: 1;
+    }
+    .brand-sub {
+      font-size: .7rem;
+      color: var(--text-3);
+      display: block;
+    }
+
+    .topbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      background: transparent;
+      transition: all .18s;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .nav-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--green-l);
+    }
+    .nav-btn.danger {
+      color: var(--red);
+      border-color: rgba(220,38,38,.2);
+    }
+    .nav-btn.danger:hover {
+      background: var(--red-l);
+      border-color: var(--red);
+    }
+    .nav-btn .ico { font-size: 14px; }
+
+    /* ══ PAGE BODY ══ */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: clamp(20px, 4vw, 40px) clamp(14px, 4vw, 32px) 60px;
+    }
+
+    /* ── Page title ── */
+    .page-head {
+      margin-bottom: 24px;
+    }
+    .page-head h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.3rem, 3vw, 1.75rem);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .page-head h1 span { color: var(--green); }
+    .page-head p {
+      color: var(--text-2);
+      font-size: .85rem;
+      margin-top: 5px;
+    }
+
+    /* ── Stats row ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 16px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .2s;
+    }
+    .stat:hover { box-shadow: var(--shadow-md); }
+    .stat-ico {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .stat-ico.g { background: #DCFCE7; }
+    .stat-ico.a { background: #FEF3C7; }
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      display: block;
+    }
+    .stat-lbl {
+      font-size: .72rem;
+      color: var(--text-3);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* ══ FORM CARD ══ */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    /* card header */
+    .card-header {
+      background: linear-gradient(135deg, var(--green-d) 0%, var(--green) 100%);
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .ch-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .ch-sub { font-size: .78rem; color: rgba(255,255,255,.65); }
+    .steps {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .step {
+      padding: 4px 13px;
+      border-radius: 100px;
+      font-size: .7rem;
+      font-weight: 600;
+      background: rgba(255,255,255,.15);
+      color: rgba(255,255,255,.55);
+      white-space: nowrap;
+    }
+    .step.active { background: #fff; color: var(--green); }
+
+    /* form sections */
+    .form-body { padding: 28px; }
+
+    .form-section { margin-bottom: 26px; }
+    .form-section:last-child { margin-bottom: 0; }
+
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--green-l);
+    }
+    .sec-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: .66rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .fields-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .fields-grid.c2 { grid-template-columns: 1fr 1fr; }
+    .fields-grid.c1 { grid-template-columns: 1fr; }
+
+    /* field */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    .field label {
+      font-size: .79rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field label .req { color: var(--red); font-size: .9rem; line-height: 1; }
+    .field label .hint {
+      font-weight: 400;
+      color: var(--text-3);
+      font-size: .75rem;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      color: var(--text);
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 13px;
+      width: 100%;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%2316A34A' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 13px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--green);
+      background: #fff;
+      box-shadow: 0 0 0 3px var(--green-ring);
+    }
+    .field input::placeholder { color: var(--text-3); }
+
+    /* file upload */
+    .file-zone {
+      border: 1.5px dashed var(--border-med);
+      border-radius: var(--radius-lg);
+      padding: 26px 20px;
+      text-align: center;
+      background: var(--input-bg);
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+    .file-zone:hover,
+    .file-zone.drag { border-color: var(--green); background: var(--green-l); }
+    .file-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .fz-ico { font-size: 22px; margin-bottom: 6px; }
+    .fz-txt { font-size: .85rem; color: var(--text-2); }
+    .fz-txt strong { color: var(--green); }
+    .fz-sub { font-size: .73rem; color: var(--text-3); margin-top: 4px; }
+
+    #fpreview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .pchip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #DCFCE7;
+      border: 1px solid var(--border-med);
+      border-radius: 7px;
+      padding: 5px 11px;
+      font-size: .76rem;
+      color: var(--green-d);
+      font-weight: 500;
+      animation: pop .22s ease both;
+    }
+    @keyframes pop { from { opacity: 0; transform: scale(.87); } to { opacity: 1; transform: scale(1); } }
+
+    /* form footer */
+    .card-foot {
+      padding: 18px 28px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #FAFFFE;
+      flex-wrap: wrap;
+    }
+    .foot-note {
+      font-size: .77rem;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .foot-actions { display: flex; gap: 10px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .84rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .18s;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-med);
+      color: var(--text-2);
+    }
+    .btn-ghost:hover {
+      border-color: var(--red);
+      color: var(--red);
+      background: var(--red-l);
+    }
+    .btn-submit {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 3px 14px rgba(22,163,74,.28);
+    }
+    .btn-submit:hover {
+      background: var(--green-d);
+      box-shadow: 0 6px 22px rgba(22,163,74,.36);
+      transform: translateY(-1px);
+    }
+    .btn-submit:active { transform: none; }
+    .btn-submit:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+
+    .spinner {
+      display: none;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+    }
+    .loading .spinner { display: block; }
+    .loading .btn-lbl { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 680px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+      .fields-grid.c2 { grid-template-columns: 1fr; }
+      .steps { display: none; }
+      .card-header { padding: 18px 20px; }
+      .form-body { padding: 20px 16px; }
+      .card-foot { padding: 14px 16px; }
+    }
+    @media (max-width: 420px) {
+      .nav-btn span { display: none; }
+      .nav-btn { padding: 7px 10px; }
+      .stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .stat { padding: 12px; gap: 8px; }
+      .stat-ico { width: 32px; height: 32px; font-size: 13px; }
+      .stat-val { font-size: 1.05rem; }
+      .foot-note { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<header class="topbar">
+  <a href="/" class="brand">
+    <div class="brand-icon">✈️</div>
+    <div>
+      <span class="brand-name">VisaPanel</span>
+      <span class="brand-sub">Admin Console</span>
+    </div>
+  </a>
+
+  <nav class="topbar-nav">
+    <a href="/view" class="nav-btn">
+      <span class="ico">📂</span>
+      <span>All Applications</span>
+    </a>
+    <a href="/showselect" class="nav-btn danger">
+      <span class="ico">🗑️</span>
+      <span>Manage Pictures</span>
+    </a>
+  </nav>
+</header>
+
+<!-- ═══ PAGE ═══ -->
+<div class="page">
+
+  <!-- Heading -->
+  <div class="page-head">
+    <h1>New Visa <span>Application</span></h1>
+    <p>Fill in the applicant details and upload supporting documents below.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-ico g">📋</div>
+      <div>
+        <span class="stat-val"><%= typeof totalApps !== 'undefined' ? totalApps : '—' %></span>
+        <span class="stat-lbl">Total Applications</span>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-ico g">✅</div>
+      <div>
+        <span class="stat-val">98%</span>
+        <span class="stat-lbl">Approval Rate</span>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-ico a">⏳</div>
+      <div>
+        <span class="stat-val"><%= typeof pendingApps !== 'undefined' ? pendingApps : '—' %></span>
+        <span class="stat-lbl">Pending Review</span>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-ico g">🌍</div>
+      <div>
+        <span class="stat-val">90+</span>
+        <span class="stat-lbl">Countries Covered</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      <div>
+        <div class="ch-title">Visa Application Form</div>
+        <div class="ch-sub">Complete all required fields to submit</div>
+      </div>
+      <div class="steps">
+        <div class="step active">① Details</div>
+        <div class="step">② Documents</div>
+        <div class="step">③ Submit</div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form id="visa-form" action="/savevisa" method="POST" enctype="multipart/form-data">
+      <div class="form-body">
+
+        <!-- ─ Section 1: Applicant Info ─ -->
+        <div class="form-section">
+          <div class="sec-head">
+            <span class="sec-num">1</span>
+            Applicant Information
+          </div>
+          <div class="fields-grid c2">
+            <div class="field">
+              <label>Full Name <span class="req">*</span></label>
+              <input
+                type="text"
+                name="name"
+                placeholder="e.g. Hassan Raza"
+                value="<%= typeof formData !== 'undefined' ? formData.name || '' : '' %>"
+                required
+                autocomplete="name"
+              />
+            </div>
+            <div class="field">
+              <label>Passport Number <span class="req">*</span></label>
+              <input
+                type="text"
+                name="passportNumber"
+                placeholder="e.g. AB1234567"
+                value="<%= typeof formData !== 'undefined' ? formData.passportNumber || '' : '' %>"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- ─ Section 2: Document & Country ─ -->
+        <div class="form-section">
+          <div class="sec-head">
+            <span class="sec-num">2</span>
+            Document &amp; Destination
+          </div>
+          <div class="fields-grid c2">
+            <div class="field">
+              <label>Document Number <span class="req">*</span></label>
+              <input
+                type="text"
+                name="documentNumber"
+                placeholder="e.g. DOC-2024-001"
+                value="<%= typeof formData !== 'undefined' ? formData.documentNumber || '' : '' %>"
+                required
+              />
+            </div>
+            <div class="field">
+              <label>Destination Country <span class="req">*</span></label>
+              <select name="country" required>
+                <option value="">— Select Country —</option>
+                <optgroup label="🌍 Popular Destinations">
+                  <% const popular = ['United States','Canada','United Kingdom','Australia','Germany','France','United Arab Emirates','Saudi Arabia','Turkey']; %>
+                  <% popular.forEach(c => { %>
+                    <option value="<%= c %>" <%= (typeof formData !== 'undefined' && formData.country === c) ? 'selected' : '' %>><%= c %></option>
+                  <% }); %>
+                </optgroup>
+                <optgroup label="🌎 Americas">
+                  <% const americas = ['Argentina','Bolivia','Brazil','Chile','Colombia','Costa Rica','Ecuador','El Salvador','Guatemala','Honduras','Jamaica','Mexico','Nicaragua','Panama','Paraguay','Peru','Venezuela']; %>
+                  <% americas.forEach(c => { %>
+                    <option value="<%= c %>" <%= (typeof formData !== 'undefined' && formData.country === c) ? 'selected' : '' %>><%= c %></option>
+                  <% }); %>
+                </optgroup>
+                <optgroup label="🌍 Europe">
+                  <% const europe = ['Armenia','Austria','Azerbaijan','Belarus','Belgium','Bosnia and Herzegovina','Bulgaria','Croatia','Czech Republic','Denmark','Estonia','Finland','France','Germany','Greece','Hungary','Iceland','Ireland','Italy','Latvia','Lithuania','Luxembourg','Netherlands','Norway','Poland','Portugal','Romania','Russia','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland','Ukraine','United Kingdom']; %>
+                  <% europe.forEach(c => { %>
+                    <option value="<%= c %>" <%= (typeof formData !== 'undefined' && formData.country === c) ? 'selected' : '' %>><%= c %></option>
+                  <% }); %>
+                </optgroup>
+                <optgroup label="🌏 Asia &amp; Pacific">
+                  <% const asia = ['Bangladesh','China','Fiji','India','Indonesia','Iraq','Israel','Japan','Jordan','Kazakhstan','Kuwait','Malaysia','Maldives','Nepal','New Zealand','Oman','Pakistan','Philippines','Qatar','Saudi Arabia','Singapore','South Korea','Sri Lanka','Thailand','Turkey','Uzbekistan','Vietnam']; %>
+                  <% asia.forEach(c => { %>
+                    <option value="<%= c %>" <%= (typeof formData !== 'undefined' && formData.country === c) ? 'selected' : '' %>><%= c %></option>
+                  <% }); %>
+                </optgroup>
+                <optgroup label="🌍 Africa">
+                  <% const africa = ['Algeria','Angola','Egypt','Ethiopia','Ghana','Kenya','Madagascar','Malawi','Mali','Mauritius','Morocco','Nigeria','South Africa','Sudan','Tunisia','Uganda']; %>
+                  <% africa.forEach(c => { %>
+                    <option value="<%= c %>" <%= (typeof formData !== 'undefined' && formData.country === c) ? 'selected' : '' %>><%= c %></option>
+                  <% }); %>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─ Section 3: File Upload ─ -->
+        <div class="form-section">
+          <div class="sec-head">
+            <span class="sec-num">3</span>
+            Supporting Documents
+          </div>
+          <div class="fields-grid c1">
+            <div class="field">
+              <label>
+                Upload Images <span class="req">*</span>
+                <span class="hint">&nbsp;(Max 3 files · JPG / PNG / PDF)</span>
+              </label>
+              <div class="file-zone" id="fzone">
+                <input
+                  type="file"
+                  name="images"
+                  id="finput"
+                  multiple
+                  required
+                  accept="image/*,.pdf"
+                />
+                <div class="fz-ico">📎</div>
+                <div class="fz-txt"><strong>Click to browse</strong> or drag &amp; drop files here</div>
+                <div class="fz-sub">Accepted: JPG, PNG, PDF &nbsp;·&nbsp; Max 3 files</div>
+              </div>
+              <div id="fpreview"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="card-foot">
+        <div class="foot-note">🔒 All submissions are encrypted and stored securely.</div>
+        <div class="foot-actions">
+          <button type="reset" class="btn btn-ghost" onclick="clearPreview()">✕ Clear Form</button>
+          <button type="submit" class="btn btn-submit" id="sbtn">
+            <div class="spinner"></div>
+            <span class="btn-lbl">✈️ Submit Application</span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+  <!-- /form-card -->
+
+</div>
+<!-- /page -->
+
+<script>
+  const finput  = document.getElementById('finput');
+  const fpreview = document.getElementById('fpreview');
+  const fzone   = document.getElementById('fzone');
+
+  finput.addEventListener('change', renderPreview);
+
+  function renderPreview() {
+    fpreview.innerHTML = '';
+    Array.from(finput.files).slice(0, 3).forEach(function(f) {
+      const chip = document.createElement('div');
+      chip.className = 'pchip';
+      const icon = f.type.includes('pdf') ? '📄' : '🖼️';
+      chip.innerHTML = icon + ' ' + f.name +
+        ' <span style="font-weight:400;color:var(--text-2)">(' + Math.round(f.size / 1024) + ' KB)</span>';
+      fpreview.appendChild(chip);
+    });
+  }
+
+  function clearPreview() {
+    fpreview.innerHTML = '';
+  }
+
+  /* drag & drop */
+  fzone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    fzone.classList.add('drag');
+  });
+  fzone.addEventListener('dragleave', function() {
+    fzone.classList.remove('drag');
+  });
+  fzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    fzone.classList.remove('drag');
+    finput.files = e.dataTransfer.files;
+    renderPreview();
+  });
+
+  /* submit loading state */
+  document.getElementById('visa-form').addEventListener('submit', function() {
+    var btn = document.getElementById('sbtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+  });
+</script>
+</body>
+</html>
