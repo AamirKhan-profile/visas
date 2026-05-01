@@ -13,7 +13,7 @@ const User = require('./models/user.js');
 const Pictures = require('./models/pictures.js');
 
 // Replace with your actual MongoDB Atlas string since you don't have .env yet
-const uri = "YOUR_MONGODB_ATLAS_CONNECTION_STRING_HERE";
+const uri = ""mongodb+srv://yourUsername:yourPassword@cluster0.abcde.mongodb.net/visas?retryWrites=true&w=majority";";
 
 /* --- 2. MULTER DISK STORAGE (Last used method) --- */
 const storage = multer.diskStorage({
