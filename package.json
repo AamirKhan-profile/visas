@@ -11,7 +11,8 @@
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
-    "build": "echo 'No build step required for backend'"
+    "build": "echo 'build complete'",
+    "install": "npm install"
   },
   "dependencies": {
     "body-parser": "^2.0.1",
